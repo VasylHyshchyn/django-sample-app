@@ -11,4 +11,4 @@
       - migrate
       - --noinput
     chdir: /opt/django-app
-  run_once: true
+  when: inventory_hostname == "web_1"
