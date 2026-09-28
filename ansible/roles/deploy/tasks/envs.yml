@@ -57,7 +57,7 @@
     group: "{{ django_group }}"
     mode: "0644"
     content: |
-      ALLOWED_HOSTS = ['*']
+      ALLOWED_HOSTS = ['{{ ansible_allowed_host }}', 'localhost',]
 
       DATABASES = {
           'default': {

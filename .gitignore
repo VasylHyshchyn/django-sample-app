@@ -6,3 +6,4 @@ terraform/*.tfstate.*
 
 ansible/inventory.ini
 
+ansible/group_vars/all/vault.yml

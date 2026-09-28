@@ -67,6 +67,7 @@ ${name} ansible_host=${instance.id}
 db_server ansible_host=${aws_instance.db.id} db_host=${aws_instance.db.private_ip}
 
 [all:vars]
+ansible_allowed_host=${aws_lb.main.dns_name}
 ansible_connection=community.aws.aws_ssm
 ansible_aws_ssm_region=${var.aws_region}
 ansible_aws_ssm_bucket_name=${aws_s3_bucket.ansible_ssm.bucket}

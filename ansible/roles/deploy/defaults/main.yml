@@ -8,5 +8,5 @@ django_port: 8000
 
 django_db_name: django_db
 django_db_user: django_user
-django_db_password: django_password
+django_db_password: "{{ postgres_password }}"
 django_db_port: 5432

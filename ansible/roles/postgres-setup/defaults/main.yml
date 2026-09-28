@@ -1,3 +1,2 @@
 postgres_db: django_db
 postgres_user: django_user
-postgres_password: django_password
