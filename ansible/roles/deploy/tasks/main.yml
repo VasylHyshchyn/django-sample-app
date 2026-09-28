@@ -1,0 +1,16 @@
+---
+- name: Install deployment packages
+  ansible.builtin.include_tasks: packages.yml
+
+- name: Configure Django application
+  ansible.builtin.include_tasks: envs.yml
+
+
+- name: Run database migrations
+  ansible.builtin.include_tasks: migration.yml
+
+- name: Run Django application
+  ansible.builtin.include_tasks: run-server.yml
+
+- name: Configure Nginx
+  ansible.builtin.include_tasks: nginx.yml

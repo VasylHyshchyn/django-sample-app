@@ -1,0 +1,12 @@
+---
+- name: Install PostgreSQL packages
+  ansible.builtin.include_tasks: packages.yml
+
+- name: Ensure PostgreSQL is running
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Configure PostgreSQL
+  ansible.builtin.include_tasks: configure-db.yml

@@ -1,0 +1,34 @@
+---
+- name: Create Gunicorn systemd service
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/django.service
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Django Gunicorn application
+      After=network.target
+
+      [Service]
+      User={{ django_user }}
+      Group={{ django_group }}
+      WorkingDirectory={{ django_app_dir }}
+      ExecStart={{ django_venv }}/bin/gunicorn \
+        --bind 0.0.0.0:{{ django_port }} \
+        hc.wsgi:application
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Start and enable Django
+  become: true
+  ansible.builtin.systemd:
+    name: django
+    state: started
+    enabled: true

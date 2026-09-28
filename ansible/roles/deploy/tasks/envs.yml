@@ -1,0 +1,72 @@
+---
+
+- name: Mark Django application as safe Git directory
+  become: true
+  ansible.builtin.command:
+    cmd: git config --global --add safe.directory "{{ django_app_dir }}"
+  changed_when: false
+
+- name: Clone Django application
+  become: true
+  ansible.builtin.git:
+    repo: "{{ django_repo }}"
+    dest: "{{ django_app_dir }}"
+    version: main
+    update: true
+    force: true
+
+- name: Set application directory ownership
+  become: true
+  ansible.builtin.file:
+    path: "{{ django_app_dir }}"
+    owner: "{{ django_user }}"
+    group: "{{ django_group }}"
+    recurse: true
+
+- name: Create Python virtual environment
+  become: true
+  ansible.builtin.command:
+    cmd: python3 -m venv "{{ django_venv }}"
+    creates: "{{ django_venv }}/bin/activate"
+
+- name: Set virtual environment ownership
+  become: true
+  ansible.builtin.file:
+    path: "{{ django_venv }}"
+    owner: "{{ django_user }}"
+    group: "{{ django_group }}"
+    recurse: true
+
+- name: Install Python dependencies
+  become: true
+  ansible.builtin.pip:
+    requirements: "{{ django_app_dir }}/requirements.txt"
+    virtualenv: "{{ django_venv }}"
+
+- name: Install Gunicorn
+  become: true
+  ansible.builtin.pip:
+    name: gunicorn
+    virtualenv: "{{ django_venv }}"
+
+- name: Create Django local settings
+  become: true
+  ansible.builtin.copy:
+    dest: "{{ django_app_dir }}/hc/local_settings.py"
+    owner: "{{ django_user }}"
+    group: "{{ django_group }}"
+    mode: "0644"
+    content: |
+      ALLOWED_HOSTS = ['*']
+
+      DATABASES = {
+          'default': {
+              'ENGINE': 'django.db.backends.postgresql',
+              'NAME': '{{ django_db_name }}',
+              'USER': '{{ django_db_user }}',
+              'PASSWORD': '{{ django_db_password }}',
+              'HOST': '{{ hostvars["db_server"]["db_host"] }}',
+              'PORT': '{{ django_db_port }}',
+          }
+      }
+  notify: Restart Django

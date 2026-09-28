@@ -1,0 +1,14 @@
+---
+- name: Run Django migrations
+  become: true
+  ansible.builtin.command:
+    argv:
+      - sudo
+      - -u
+      - django
+      - /opt/django-app/venv/bin/python
+      - manage.py
+      - migrate
+      - --noinput
+    chdir: /opt/django-app
+  run_once: true

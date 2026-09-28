@@ -1,0 +1,12 @@
+---
+- name: Reload Nginx
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+
+- name: Restart Django
+  become: true
+  ansible.builtin.systemd:
+    name: django
+    state: restarted

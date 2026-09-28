@@ -1,0 +1,16 @@
+---
+- name: Copy Django Nginx configuration
+  become: true
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/sites-available/django
+    mode: "0644"
+  notify: Reload Nginx
+
+- name: Enable Django Nginx site
+  become: true
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/django
+    dest: /etc/nginx/sites-enabled/django
+    state: link
+  notify: Reload Nginx

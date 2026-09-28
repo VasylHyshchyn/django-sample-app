@@ -1,0 +1,14 @@
+---
+- name: Install deployment packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - git
+      - python3
+      - python3-pip
+      - python3-venv
+      - python3-dev
+      - build-essential
+      - libpq-dev
+    state: present
+    update_cache: true

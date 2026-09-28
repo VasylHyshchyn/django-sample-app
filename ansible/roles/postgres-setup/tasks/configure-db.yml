@@ -1,0 +1,31 @@
+---
+- name: Create PostgreSQL user
+  become: true
+  ansible.builtin.command:
+    cmd: sudo -u postgres psql -c "CREATE USER {{ postgres_user }} WITH PASSWORD '{{ postgres_password }}';"
+  register: create_user
+  failed_when: create_user.rc != 0 and "already exists" not in create_user.stderr
+
+- name: Create PostgreSQL database
+  become: true
+  ansible.builtin.command:
+    cmd: sudo -u postgres psql -c "CREATE DATABASE {{ postgres_db }} OWNER {{ postgres_user }};"
+  register: create_db
+  failed_when: create_db.rc != 0 and "already exists" not in create_db.stderr
+
+- name: Allow PostgreSQL to listen on all interfaces
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/16/main/postgresql.conf
+    regexp: '^#?listen_addresses\s*='
+    line: "listen_addresses = '*'"
+    state: present
+  notify: Restart PostgreSQL
+
+- name: Allow connections from VPC
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/16/main/pg_hba.conf
+    insertafter: EOF
+    line: "host    {{ postgres_db }}    {{ postgres_user }}    10.0.0.0/16    scram-sha-256"
+    state: present
