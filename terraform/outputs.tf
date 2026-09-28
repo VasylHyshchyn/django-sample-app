@@ -14,7 +14,7 @@ output "alb_dns_name" {
 
 output "web_instance_ids" {
   description = "Web EC2 instance IDs"
-  value       = {
+  value = {
     for name, instance in aws_instance.web :
     name => instance.id
   }
@@ -23,7 +23,7 @@ output "web_instance_ids" {
 
 output "web_private_ips" {
   description = "Private IPs of web EC2 instances"
-  value       = {
+  value = {
     for name, instance in aws_instance.web :
     name => instance.private_ip
   }
@@ -59,9 +59,9 @@ resource "local_file" "ansible_inventory" {
 
   content = <<-EOT
 [web]
-%{ for name, instance in aws_instance.web ~}
+%{for name, instance in aws_instance.web~}
 ${name} ansible_host=${instance.id}
-%{ endfor ~}
+%{endfor~}
 
 [db]
 db_server ansible_host=${aws_instance.db.id} db_host=${aws_instance.db.private_ip}

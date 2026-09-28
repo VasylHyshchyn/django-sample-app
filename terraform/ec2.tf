@@ -9,8 +9,8 @@ resource "aws_security_group" "web" {
 
   ingress {
     description     = "HTTP from ALB"
-    from_port       = 80
-    to_port         = 80
+    from_port       = var.http_port
+    to_port         = var.http_port
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
@@ -39,8 +39,8 @@ resource "aws_security_group" "db" {
 
   ingress {
     description     = "PostgreSQL from web servers"
-    from_port       = 5432
-    to_port         = 5432
+    from_port       = var.postgres_port
+    to_port         = var.postgres_port
     protocol        = "tcp"
     security_groups = [aws_security_group.web.id]
   }
@@ -69,7 +69,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+    values = [var.ubuntu_ami_name_pattern]
   }
 
   filter {
